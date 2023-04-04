@@ -30,13 +30,23 @@ use tokio::{
     sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender},
 };
 
-#[tokio::main]
-async fn main() {
-    println!("starting...");
+fn main() {
+    println!("sync starting...");
 
     env_logger::builder()
         .filter(None, log::LevelFilter::Trace)
         .init();
+
+    let body = async_main();
+    return tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .expect("Failed building the Runtime")
+        .block_on(body);
+}
+
+async fn async_main() {
+    println!("async starting...");
 
     let addr: SocketAddr = ([0, 0, 0, 0], 25550).into();
     let listener = TcpListener::bind(addr).await.unwrap();
