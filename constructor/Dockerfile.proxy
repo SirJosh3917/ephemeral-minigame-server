@@ -1,0 +1,10 @@
+FROM openjdk:17
+WORKDIR /app
+
+RUN curl https://api.papermc.io/v2/projects/waterfall/versions/1.19/builds/520/downloads/waterfall-1.19-520.jar \
+	-o server.jar
+
+COPY assets/waterfall/* /app/plugins/
+COPY --from=waterfall-plugin /waterfallplugin.jar /app/plugins
+
+ENTRYPOINT java -jar server.jar

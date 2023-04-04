@@ -1,0 +1,19 @@
+FROM openjdk:8
+WORKDIR /app
+
+RUN curl https://api.papermc.io/v2/projects/paper/versions/1.8.8/builds/445/downloads/paper-1.8.8-445.jar \
+	-o server.jar
+
+# Agree to EULA
+COPY eula.txt .
+RUN echo "Checking for agreement to EULA" && grep eula=true eula.txt
+
+# Populate basic config/files
+RUN echo "stop" | java -jar server.jar
+
+# Configure server to be proxied by bungeecord, ensuring `bungeecord: false` exists to be replaced.
+RUN grep -q 'bungeecord: false' spigot.yml && sed -i 's/bungeecord: false/bungeecord: true/g' spigot.yml
+
+COPY --from=server-plugin /serverplugin.jar /app/plugins
+
+ENTRYPOINT java -jar server.jar

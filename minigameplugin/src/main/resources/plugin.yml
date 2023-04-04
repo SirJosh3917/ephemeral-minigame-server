@@ -1,0 +1,9 @@
+name: MinigamePlugin
+version: 1.0
+author: SirJosh3917
+main: com.sirn.minigames.debug.DebugMinigamePlugin
+api-version: 1.8.8
+commands:
+  endminigame:
+    description: Ends the minigame
+    usage: /endminigame

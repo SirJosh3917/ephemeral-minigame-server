@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  controller:
+    image: ems-controller
+    build: ./controller/
+    pull_policy: never
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - cluster_net
+  proxy:
+    image: ems-proxy
+    pull_policy: never
+    depends_on:
+      - controller
+    ports:
+      - 25565:25577
+    environment:
+      - "CONTROLLER_IP=controller:25550"
+    networks:
+      - cluster_net
+
+networks:
+  cluster_net:
+    driver: bridge

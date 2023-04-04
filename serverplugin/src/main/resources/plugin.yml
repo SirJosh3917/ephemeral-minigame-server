@@ -1,0 +1,12 @@
+name: ServerPlugin
+version: 1.0
+author: SirJosh3917
+main: com.sirn.ControllerPlugin
+api-version: 1.8.8
+commands:
+  request:
+    description: Request a minigame server to be spun up.
+    usage: /request <kind>
+  close:
+    description: Change the active state of the server.
+    usage: /close <true/false>
