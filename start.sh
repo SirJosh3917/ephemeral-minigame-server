@@ -10,9 +10,9 @@ set -e
 (cd waterfallplugin && docker build . -t waterfall-plugin)
 
 # Build our server images (these will be spawned by Docker daemons)
-(cd constructor && docker build . -f Dockerfile.proxy -t ems-proxy)
-(cd constructor && docker build . -f Dockerfile.lobby -t ems-lobby)
-(cd constructor && docker build . -f Dockerfile.minigame -t ems-minigame)
+(cd servers && docker build . -f Dockerfile.proxy -t ems-proxy)
+(cd servers && docker build . -f Dockerfile.lobby -t ems-lobby)
+(cd servers && docker build . -f Dockerfile.minigame -t ems-minigame)
 
 # Allow for `./start.sh -d`
 docker compose up --build "$@"

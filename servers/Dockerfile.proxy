@@ -10,7 +10,7 @@ RUN echo "end" | java -jar server.jar
 # Configure server to be proxied by bungeecord
 RUN grep -q 'ip_forward: false' config.yml && sed -i 's/ip_forward: false/ip_forward: true/g' config.yml
 
-COPY assets/waterfall/* /app/plugins/
+COPY assets/waterfall/*.jar /app/plugins/
 COPY --from=waterfall-plugin /waterfallplugin.jar /app/plugins
 
 ENTRYPOINT java -jar server.jar
