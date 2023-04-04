@@ -13,22 +13,32 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class HeadControllerPlugin extends Plugin {
     @Override
     public void onEnable() {
-        Socket socket;
-
         String controllerIp = System.getenv("CONTROLLER_IP");
         if (controllerIp == null) {
             getLogger().severe("Could not get `CONTROLLER_IP` from env vars.");
             return;
         }
 
+		InetAddress address;
+		try {
+			address = InetAddress.getByName(controllerIp);
+		} catch (UnknownHostException e) {
+			getLogger().severe("Could not convert `CONTROLLER_IP` into an address (value: " + controllerIp + ")");;
+			e.printStackTrace();
+			return;
+		}
+
+        Socket socket;
         try {
-            socket = new Socket(controllerIp, 25550);
+            socket = new Socket(address, 25550);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("couldn't make socket");

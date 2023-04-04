@@ -9,7 +9,9 @@ import com.sirn.controller_connection.packets.MinigamePayload;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class ControllerPlugin extends JavaPlugin {
     @Override
@@ -58,8 +60,17 @@ public class ControllerPlugin extends JavaPlugin {
             return;
         }
 
+		InetAddress address;
+		try {
+			address = InetAddress.getByName(controllerIp);
+		} catch (UnknownHostException e) {
+			getLogger().severe("Could not convert `CONTROLLER_IP` into an address (value: " + controllerIp + ")");;
+			e.printStackTrace();
+			return;
+		}
+
         try {
-            socket = new Socket(controllerIp, 25550);
+            socket = new Socket(address, 25550);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("couldn't make socket");

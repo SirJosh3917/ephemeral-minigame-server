@@ -17,10 +17,11 @@ services:
     ports:
       - 25565:25577
     environment:
-      - "CONTROLLER_IP=controller:25550"
+      - "CONTROLLER_IP=controller"
     networks:
       - cluster_net
 
 networks:
   cluster_net:
     driver: bridge
+    name: ems_network

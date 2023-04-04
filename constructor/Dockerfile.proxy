@@ -4,6 +4,12 @@ WORKDIR /app
 RUN curl https://api.papermc.io/v2/projects/waterfall/versions/1.19/builds/520/downloads/waterfall-1.19-520.jar \
 	-o server.jar
 
+# Populate basic config/files
+RUN echo "end" | java -jar server.jar
+
+# Configure server to be proxied by bungeecord
+RUN grep -q 'ip_forward: false' config.yml && sed -i 's/ip_forward: false/ip_forward: true/g' config.yml
+
 COPY assets/waterfall/* /app/plugins/
 COPY --from=waterfall-plugin /waterfallplugin.jar /app/plugins
 

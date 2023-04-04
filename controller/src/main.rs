@@ -559,6 +559,7 @@ async fn brain(
 
                 let mut env = Vec::new();
 
+                env.push("CONTROLLER_IP=controller".to_owned());
                 env.push(format!("SERVER_NAME={server_name}"));
 
                 match kind.clone() {

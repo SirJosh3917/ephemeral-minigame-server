@@ -11,8 +11,9 @@ RUN echo "Checking for agreement to EULA" && grep eula=true eula.txt
 # Populate basic config/files
 RUN echo "stop" | java -jar server.jar
 
-# Configure server to be proxied by bungeecord, ensuring `bungeecord: false` exists to be replaced.
+# Configure server to be proxied by bungeecord
 RUN grep -q 'bungeecord: false' spigot.yml && sed -i 's/bungeecord: false/bungeecord: true/g' spigot.yml
+RUN grep -q 'online-mode=true' server.properties && sed -i 's/online-mode=true/online-mode=false/g' server.properties
 
 COPY --from=server-plugin /serverplugin.jar /app/plugins
 
