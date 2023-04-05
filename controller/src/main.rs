@@ -13,9 +13,10 @@ use rmp_serde::{Deserializer, Serializer};
 use rouille::Response;
 use serde::{Deserialize, Serialize};
 // use serde_derive::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};
 use std::future::Future;
 use std::net::SocketAddr;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use thiserror::Error;
 use tokio::io::{AsyncWriteExt, BufReader};
@@ -29,6 +30,47 @@ use tokio::{
     },
     sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender},
 };
+
+#[derive(Clone, Copy)]
+pub enum ComputerStatus {
+    Starting,
+    Online,
+    Offline,
+}
+
+#[derive(Clone, Default)]
+pub struct GlobalComputerMap {
+    // BTreeMap for stable order
+    data: Arc<Mutex<BTreeMap<String, ComputerStatus>>>,
+}
+
+impl GlobalComputerMap {
+    pub fn set_status<S: ToString>(&self, computer_name: S, status: ComputerStatus) {
+        let mut data = match self.data.lock() {
+            Ok(guard) => guard,
+            Err(err) => err.into_inner(),
+        };
+
+        match status {
+            ComputerStatus::Offline => {
+                let computer_name = computer_name.to_string();
+                data.remove(&computer_name)
+            }
+            status => data.insert(computer_name.to_string(), status),
+        };
+    }
+
+    pub fn list_statuses(&self) -> Vec<(String, ComputerStatus)> {
+        let data_guard = match self.data.lock() {
+            Ok(guard) => guard,
+            Err(err) => err.into_inner(),
+        };
+        let data = data_guard.clone();
+        drop(data_guard);
+
+        data.into_iter().collect()
+    }
+}
 
 fn main() {
     println!("sync starting...");
@@ -48,7 +90,9 @@ fn main() {
 async fn async_main() {
     println!("async starting...");
 
-    tokio::task::spawn(serve_web());
+    let computers = GlobalComputerMap::default();
+
+    tokio::task::spawn(serve_web(computers.clone()));
 
     let addr: SocketAddr = ([0, 0, 0, 0], 25550).into();
     let listener = TcpListener::bind(addr).await.unwrap();
@@ -57,11 +101,14 @@ async fn async_main() {
     // start the brain
     let (sender, receiver) = unbounded_channel();
     let child_sender = sender.clone();
+    let child_computers = computers.clone();
     tokio::task::spawn(async move {
-        match brain(child_sender, receiver).await {
+        child_computers.set_status("brain", ComputerStatus::Online);
+        match brain(child_computers.clone(), child_sender, receiver).await {
             Ok(_) => info!("brain exited successfully!"),
             Err(err) => error!("brain exited unexpectedly: {err:?}"),
         };
+        child_computers.set_status("brain", ComputerStatus::Offline);
     });
 
     sender
@@ -90,11 +137,25 @@ async fn async_main() {
     info!("shutting down");
 }
 
-async fn serve_web() {
+async fn serve_web(computers: GlobalComputerMap) {
     info!("web server starting on :25580");
 
-    rouille::start_server("0.0.0.0:25580", move |request| {
-        Response::text("servers,online\ncomputers,starting")
+    rouille::start_server("0.0.0.0:25580", move |_| {
+        let mut response = String::with_capacity(1024);
+
+        for (computer, status) in computers.list_statuses() {
+            response.push_str(&computer);
+            response.push(',');
+            response.push_str(match status {
+                ComputerStatus::Starting => "starting",
+                ComputerStatus::Online => "online",
+                // Could be made more type safe but w/e.
+                ComputerStatus::Offline => unreachable!("list_statuses will never return Offline"),
+            });
+            response.push('\n');
+        }
+
+        Response::text(response)
     });
 }
 
@@ -350,6 +411,7 @@ enum BrainError {
 }
 
 async fn brain(
+    computers: GlobalComputerMap,
     sender: UnboundedSender<BrainMsg>,
     mut receiver: UnboundedReceiver<BrainMsg>,
 ) -> Result<(), BrainError> {
@@ -381,6 +443,8 @@ async fn brain(
                 if !used_names.insert(name.clone()) {
                     warn!("brain: name {name} already exists in used_names {used_names:?}");
                 }
+
+                computers.set_status(&name, ComputerStatus::Online);
 
                 match kind {
                     Kind::Proxy => {
@@ -484,6 +548,8 @@ async fn brain(
                     kind,
                 } = conn;
 
+                computers.set_status(&name, ComputerStatus::Offline);
+
                 // TODO: map names to connections or something?
                 if let Kind::Proxy = kind {
                     continue;
@@ -576,6 +642,8 @@ async fn brain(
 
                     counter += 1;
                 };
+
+                computers.set_status(&server_name, ComputerStatus::Starting);
 
                 let mut env = Vec::new();
 

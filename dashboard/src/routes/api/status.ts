@@ -16,6 +16,7 @@ export async function GET() {
 
     // Don't wanna use JSON on the Rust side of things when this is... okay, I guess...
     const computers = statusResp
+      .trim()
       .split("\n")
       .map((line) => line.split(","))
       .map(([name, status]) => ({ name, status }));
