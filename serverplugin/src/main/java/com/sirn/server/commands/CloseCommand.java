@@ -1,14 +1,15 @@
-package com.sirn.commands;
+package com.sirn.server.commands;
 
-import com.sirn.controller_connection.HeadController;
+import com.sirn.server.ServerPacketListener;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public class CloseCommand implements CommandExecutor {
-    private final HeadController connection;
+    private final ServerPacketListener connection;
 
-    public CloseCommand(HeadController connection) {
+    public CloseCommand(ServerPacketListener connection) {
         this.connection = connection;
     }
 

@@ -1,7 +1,7 @@
 name: ServerPlugin
 version: 1.0
 author: SirJosh3917
-main: com.sirn.ControllerPlugin
+main: com.sirn.server.ControllerPlugin
 api-version: 1.8.8
 commands:
   request:

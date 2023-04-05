@@ -1,4 +1,4 @@
-package com.sirn.head_controller;
+package com.sirn.proxy;
 
 import net.md_5.bungee.api.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;

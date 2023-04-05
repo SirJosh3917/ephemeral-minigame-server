@@ -44,10 +44,8 @@ public class Packet {
         this.updateActivePacket = updateActivePacket;
     }
 
-    public static Packet makeRequestMinigame(String minigameKind, String playerUuid) {
-        Packet packet = new Packet();
-        packet.requestPacket = new RequestPacket(AuthenticationKind.minigame(minigameKind), playerUuid);
-        return packet;
+    public static RequestPacket makeRequestMinigame(String minigameKind, String playerUuid) {
+        return new RequestPacket(AuthenticationKind.minigame(minigameKind), playerUuid);
     }
 
     @Override

@@ -57,6 +57,7 @@ public class ManagedControllerConnection {
 					// These cases intentionally unhandled as they are C -> S:
 					//
 					// - authenticationPacket
+					// - requestPacket
 					// - pongPacket
 					// - updateActivePacket
 
@@ -66,8 +67,6 @@ public class ManagedControllerConnection {
 						listener.onUnlinkServerPacket(packet.unlinkServerPacket);
 					} else if (packet.transportPlayerPacket != null) {
 						listener.onTransportPlayerPacket(packet.transportPlayerPacket);
-					} else if (packet.requestPacket != null) {
-						listener.onRequestPacket(packet.requestPacket);
 					} else if (packet.pingPacket != null) {
 						listener.onPingPacket(packet.pingPacket);
 					} else {

@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import com.sirn.transport.packets.AuthenticationPacket;
 import com.sirn.transport.packets.Packet;
 import com.sirn.transport.packets.PongPacket;
+import com.sirn.transport.packets.RequestPacket;
 import com.sirn.transport.packets.UpdateActivePacket;
 
 public class ControllerConnection implements Closeable {
@@ -44,6 +45,12 @@ public class ControllerConnection implements Closeable {
 	public void write(AuthenticationPacket packet) throws IOException {
 		Packet wrapperPacket = new Packet();
 		wrapperPacket.authenticationPacket = packet;
+		this.write(wrapperPacket);
+	}
+
+	public void write(RequestPacket packet) throws IOException {
+		Packet wrapperPacket = new Packet();
+		wrapperPacket.requestPacket = packet;
 		this.write(wrapperPacket);
 	}
 

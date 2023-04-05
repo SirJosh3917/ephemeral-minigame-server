@@ -1,4 +1,4 @@
 name: HeadControllerPlugin
-main: com.sirn.HeadControllerPlugin
+main: com.sirn.proxy.HeadControllerPlugin
 version: 1.0
 author: SirJosh3917

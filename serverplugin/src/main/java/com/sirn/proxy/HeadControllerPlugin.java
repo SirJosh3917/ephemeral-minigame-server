@@ -1,6 +1,5 @@
-package com.sirn;
+package com.sirn.proxy;
 
-import com.sirn.head_controller.HeadController;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -17,6 +16,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import com.sirn.transport.ManagedControllerConnection;
 
 public class HeadControllerPlugin extends Plugin {
     @Override
@@ -36,22 +37,12 @@ public class HeadControllerPlugin extends Plugin {
 			return;
 		}
 
-        Socket socket;
-        try {
-            socket = new Socket(address, 25550);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("couldn't make socket");
-            return;
-        }
+		RejoinReconnectHandler reconnectHandler = new RejoinReconnectHandler(this.getLogger());
+		this.getProxy().setReconnectHandler(reconnectHandler);
 
-        try {
-            HeadController headController = new HeadController(ProxyServer.getInstance(), socket);
-            this.getProxy().setReconnectHandler(headController.rejoinReconnectHandler);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+		ProxyPacketListener packetListener = new ProxyPacketListener(ProxyServer.getInstance(), reconnectHandler);
+		new ManagedControllerConnection(this.getLogger(), () -> new Socket(address, 25550), packetListener);
+
         System.out.println("created head controller");
     }
 }

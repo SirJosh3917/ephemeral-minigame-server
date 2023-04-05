@@ -1,8 +1,8 @@
-package com.sirn;
+package com.sirn.server;
 
-import com.sirn.commands.CloseCommand;
-import com.sirn.commands.RequestCommand;
-import com.sirn.controller_connection.HeadController;
+import com.sirn.server.commands.CloseCommand;
+import com.sirn.server.commands.RequestCommand;
+import com.sirn.transport.ManagedControllerConnection;
 import com.sirn.transport.packets.AuthenticationKind;
 import com.sirn.transport.packets.AuthenticationPacket;
 import com.sirn.transport.packets.AuthenticationPayload;
@@ -78,14 +78,12 @@ public class ControllerPlugin extends JavaPlugin {
             return;
         }
 
-        try {
-            HeadController headController = new HeadController(this.getLogger(), authenticationPacket, socket);
-            getServer().getPluginCommand("request").setExecutor(new RequestCommand(headController));
-            getServer().getPluginCommand("close").setExecutor(new CloseCommand(headController));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+		ServerPacketListener packetListener = new ServerPacketListener(this.getLogger(), authenticationPacket);
+
+        getServer().getPluginCommand("request").setExecutor(new RequestCommand(packetListener));
+        getServer().getPluginCommand("close").setExecutor(new CloseCommand(packetListener));
+
+		new ManagedControllerConnection(this.getLogger(), () -> new Socket(address, 25550), packetListener);
 
         System.out.println("created head controller + cmds");
     }
