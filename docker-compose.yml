@@ -2,16 +2,26 @@ version: "3.9"
 
 services:
   controller:
-    image: ems-controller
     build: ./controller/
-    pull_policy: never
+    pull_policy: build
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - cluster_net
+  dashboard:
+    build: ./dashboard/
+    pull_policy: build
+    depends_on:
+      - controller
+    ports:
+      - "3000:3000"
+    environment:
+      - "ENDPOINT=http://controller:25580/status"
+    networks:
+      - cluster_net
   proxy:
     image: ems-proxy
-    pull_policy: never
+    pull_policy: build
     depends_on:
       - controller
     ports:

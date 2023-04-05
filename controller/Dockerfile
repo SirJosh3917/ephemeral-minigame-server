@@ -3,11 +3,13 @@
 FROM rustlang/rust:nightly-bullseye-slim AS build
 WORKDIR /src
 
+# Not opting to have a separate dependency caching layer because there are some
+# weird bugs with the ./target/debug/controller binary being the compiled artifact
+# of the *old* stub main.rs... weird stuff man
 COPY Cargo.lock Cargo.toml ./
-RUN mkdir src && echo 'fn main() {}' >src/main.rs
+RUN mkdir src && echo 'fn main() {println!("weird artifact bug wtf");}' >src/main.rs
 RUN cargo fetch
-RUN cargo build
-RUN rm -rf src
+RUN rm -rf ./src/
 
 COPY . .
 RUN cargo build
