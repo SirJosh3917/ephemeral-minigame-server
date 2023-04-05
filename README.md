@@ -1,5 +1,11 @@
 # Ephemeral Minigame Server
 
+<p align="center">
+	<a href="https://youtu.be/1MKlHS_CmA8">
+		<img src="https://i.imgur.com/Pw4K7G2.png" />
+	</a>
+</p>
+
 This code is a prototypal implementation of a minigame franchise server. In
 short, there are a few components:
 
