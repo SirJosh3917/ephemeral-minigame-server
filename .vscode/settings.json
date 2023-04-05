@@ -1,4 +1,16 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
-  "cSpell.words": ["backoff", "Mojang", "Proxied", "sirn"]
+  "cSpell.words": [
+    "backoff",
+    "Mojang",
+    "Proxied",
+    "rouille",
+    "sirn",
+    "thiserror"
+  ],
+  "rust-analyzer.linkedProjects": [
+    "./controller/Cargo.toml",
+    "./controller/Cargo.toml",
+    "./controller/Cargo.toml"
+  ]
 }
