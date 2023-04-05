@@ -7,7 +7,6 @@ set -e
 # Ideally we'd use Bazel, but I don't feel like figuring that out :p
 (cd minigameplugin && docker build . -t minigame-plugin)
 (cd serverplugin && docker build . -t server-plugin)
-(cd waterfallplugin && docker build . -t waterfall-plugin)
 
 # Build our server images (these will be spawned by Docker daemons)
 (cd servers && docker build . -f Dockerfile.proxy -t ems-proxy)
