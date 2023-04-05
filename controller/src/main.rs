@@ -3,7 +3,7 @@
 #![feature(never_type)]
 #![feature(if_let_guard)]
 
-use bollard::container::{Config, CreateContainerOptions, NetworkingConfig};
+use bollard::container::Config;
 use bollard::network::ConnectNetworkOptions;
 use bollard::service::EndpointSettings;
 use bollard::Docker;
@@ -18,7 +18,6 @@ use std::net::SocketAddr;
 use std::time::Duration;
 use thiserror::Error;
 use tokio::io::{AsyncWriteExt, BufReader};
-use tokio::process::Command;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::oneshot;
 use tokio::{
@@ -332,11 +331,11 @@ enum BrainMsg {
 #[derive(Debug, Error)]
 enum BrainError {
     #[error("IO error: {0}")]
-    IoError(#[from] std::io::Error),
+    Io(#[from] std::io::Error),
     #[error("Send error (channel closed too early?)")]
-    SendError(#[from] SendError<ClusterMsg>),
+    Send(#[from] SendError<ClusterMsg>),
     #[error("Docker error")]
-    DockerError(#[from] bollard::errors::Error),
+    Docker(#[from] bollard::errors::Error),
 }
 
 async fn brain(

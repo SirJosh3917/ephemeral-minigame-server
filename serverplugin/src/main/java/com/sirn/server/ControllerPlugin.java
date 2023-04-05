@@ -9,7 +9,6 @@ import com.sirn.transport.packets.AuthenticationPayload;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -53,8 +52,6 @@ public class ControllerPlugin extends JavaPlugin {
             authenticationKind.payload = authenticationPayload;
         }
 
-        Socket socket = null;
-
         String controllerIp = System.getenv("CONTROLLER_IP");
         if (controllerIp == null) {
             getLogger().severe("Could not get `CONTROLLER_IP` from env vars.");
@@ -69,14 +66,6 @@ public class ControllerPlugin extends JavaPlugin {
 			e.printStackTrace();
 			return;
 		}
-
-        try {
-            socket = new Socket(address, 25550);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("couldn't make socket");
-            return;
-        }
 
 		ServerPacketListener packetListener = new ServerPacketListener(this.getLogger(), authenticationPacket);
 

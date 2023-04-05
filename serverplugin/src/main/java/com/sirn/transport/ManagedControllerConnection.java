@@ -39,7 +39,7 @@ public class ManagedControllerConnection {
 				this.logger.info("Failed to connect to controller, backing off for " + backoff + " seconds");
 				e.printStackTrace();
 
-				try { Thread.sleep(backoff); } catch (InterruptedException e2) {}
+				try { Thread.sleep(backoff * 1000); } catch (InterruptedException e2) {}
 
 				backoff *= 2;
 				if (backoff > MAX_BACKOFF_SECONDS) {

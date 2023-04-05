@@ -1,4 +1,4 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
-  "cSpell.words": ["Mojang", "Proxied"]
+  "cSpell.words": ["backoff", "Mojang", "Proxied", "sirn"]
 }
