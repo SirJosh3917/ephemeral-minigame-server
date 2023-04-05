@@ -2,7 +2,14 @@ package com.sirn.head_controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sirn.head_controller.packets.*;
+import com.sirn.packets.*;
+import com.sirn.packets.AuthenticationKind;
+import com.sirn.packets.AuthenticationPacket;
+import com.sirn.packets.LinkServerPacket;
+import com.sirn.packets.Packet;
+import com.sirn.packets.TransportPlayerPacket;
+import com.sirn.packets.UnlinkServerPacket;
+
 import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;

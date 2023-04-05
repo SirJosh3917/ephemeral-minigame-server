@@ -1,8 +1,8 @@
-package com.sirn.controller_connection.packets;
+package com.sirn.packets;
 
 public class AuthenticationPacket {
     public String name;
-    public ServerKind kind;
+    public AuthenticationKind kind;
     public String ip;
 
     @Override

@@ -3,9 +3,10 @@ package com.sirn;
 import com.sirn.commands.CloseCommand;
 import com.sirn.commands.RequestCommand;
 import com.sirn.controller_connection.HeadController;
-import com.sirn.controller_connection.packets.ServerKind;
-import com.sirn.controller_connection.packets.AuthenticationPacket;
-import com.sirn.controller_connection.packets.MinigamePayload;
+import com.sirn.packets.AuthenticationPacket;
+import com.sirn.packets.AuthenticationPayload;
+import com.sirn.packets.AuthenticationKind;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class ControllerPlugin extends JavaPlugin {
         }
         authenticationPacket.ip = ip + ":" + getServer().getPort();
 
-        ServerKind authenticationKind = new ServerKind();
+        AuthenticationKind authenticationKind = new AuthenticationKind();
         authenticationPacket.kind = authenticationKind;
 
         String serverName = System.getenv("SERVER_NAME");
@@ -47,7 +48,7 @@ public class ControllerPlugin extends JavaPlugin {
                 getLogger().severe("Could not get `MINIGAME_KIND` from env vars.");
                 return;
             }
-            MinigamePayload authenticationPayload = new MinigamePayload();
+            AuthenticationPayload authenticationPayload = new AuthenticationPayload();
             authenticationPayload.kind = minigameKind;
             authenticationKind.payload = authenticationPayload;
         }

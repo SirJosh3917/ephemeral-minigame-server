@@ -1,13 +1,13 @@
-package com.sirn.controller_connection.packets;
+package com.sirn.packets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestPacket {
-    public ServerKind kind;
+    public AuthenticationKind kind;
     public String player;
 
-    public RequestPacket(ServerKind kind, String player) {
+    public RequestPacket(AuthenticationKind kind, String player) {
         this.kind = kind;
         this.player = player;
     }

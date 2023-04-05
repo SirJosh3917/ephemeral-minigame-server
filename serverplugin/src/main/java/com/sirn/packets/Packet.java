@@ -1,4 +1,4 @@
-package com.sirn.controller_connection.packets;
+package com.sirn.packets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,6 +7,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Packet {
     @JsonProperty(value = "Authentication")
     public AuthenticationPacket authenticationPacket;
+
+    @JsonProperty(value = "LinkServer")
+    public LinkServerPacket linkServerPacket;
+
+    @JsonProperty(value = "UnlinkServer")
+    public UnlinkServerPacket unlinkServerPacket;
+
+    @JsonProperty(value = "TransportPlayer")
+    public TransportPlayerPacket transportPlayerPacket;
 
     @JsonProperty(value = "Request")
     public RequestPacket requestPacket;
@@ -32,7 +41,7 @@ public class Packet {
 
     public static Packet makeRequestMinigame(String minigameKind, String playerUuid) {
         Packet packet = new Packet();
-        packet.requestPacket = new RequestPacket(ServerKind.minigame(minigameKind), playerUuid);
+        packet.requestPacket = new RequestPacket(AuthenticationKind.minigame(minigameKind), playerUuid);
         return packet;
     }
 
@@ -40,6 +49,9 @@ public class Packet {
     public String toString() {
         return "Packet{" +
                 "authenticationPacket=" + authenticationPacket +
+                ", linkServerPacket=" + linkServerPacket +
+                ", unlinkServerPacket=" + unlinkServerPacket +
+                ", transportPlayerPacket=" + transportPlayerPacket +
                 ", requestPacket=" + requestPacket +
                 ", pingPacket=" + pingPacket +
                 ", pongPacket=" + pongPacket +

@@ -1,11 +1,11 @@
-package com.sirn.controller_connection.packets;
+package com.sirn.packets;
 
-public class MinigamePayload {
+public class AuthenticationPayload {
     public String kind;
 
     @Override
     public String toString() {
-        return "MinigamePayload{" +
+        return "AuthenticationPayload{" +
                 "kind='" + kind + '\'' +
                 '}';
     }

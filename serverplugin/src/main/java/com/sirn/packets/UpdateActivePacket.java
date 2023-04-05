@@ -1,4 +1,4 @@
-package com.sirn.controller_connection.packets;
+package com.sirn.packets;
 
 public class UpdateActivePacket {
     public boolean active;

@@ -1,4 +1,4 @@
-package com.sirn.head_controller.packets;
+package com.sirn.packets;
 
 public class TransportPlayerPacket {
     public String player;
