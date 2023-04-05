@@ -10,6 +10,7 @@ use bollard::Docker;
 use derive_more::Display;
 use log::{error, info, trace, warn};
 use rmp_serde::{Deserializer, Serializer};
+use rouille::Response;
 use serde::{Deserialize, Serialize};
 // use serde_derive::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -46,6 +47,8 @@ fn main() {
 
 async fn async_main() {
     println!("async starting...");
+
+    tokio::task::spawn(serve_web());
 
     let addr: SocketAddr = ([0, 0, 0, 0], 25550).into();
     let listener = TcpListener::bind(addr).await.unwrap();
@@ -85,6 +88,14 @@ async fn async_main() {
     }
 
     info!("shutting down");
+}
+
+async fn serve_web() {
+    info!("web server starting on :25580");
+
+    rouille::start_server("0.0.0.0:25580", move |request| {
+        Response::text("servers,online\ncomputers,starting")
+    });
 }
 
 /// A connection between a given server and the controller will **only** communicate
