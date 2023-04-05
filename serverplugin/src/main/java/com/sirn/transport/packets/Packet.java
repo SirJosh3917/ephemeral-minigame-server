@@ -1,8 +1,13 @@
-package com.sirn.packets;
+package com.sirn.transport.packets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Poor man's discriminated union. Only one of the public fields is guaranteed to be non-null.
+ *
+ * For documentation on packets, see `/controller/src/main.rs`.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Packet {
     @JsonProperty(value = "Authentication")

@@ -1,4 +1,4 @@
-package com.sirn.packets;
+package com.sirn.transport.packets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

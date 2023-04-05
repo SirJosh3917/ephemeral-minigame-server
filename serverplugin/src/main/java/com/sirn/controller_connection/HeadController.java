@@ -2,11 +2,11 @@ package com.sirn.controller_connection;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sirn.packets.Packet;
-import com.sirn.packets.PingPacket;
-import com.sirn.packets.PongPacket;
-import com.sirn.packets.UpdateActivePacket;
-import com.sirn.packets.AuthenticationPacket;
+import com.sirn.transport.packets.AuthenticationPacket;
+import com.sirn.transport.packets.Packet;
+import com.sirn.transport.packets.PingPacket;
+import com.sirn.transport.packets.PongPacket;
+import com.sirn.transport.packets.UpdateActivePacket;
 
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 

@@ -3,9 +3,9 @@ package com.sirn;
 import com.sirn.commands.CloseCommand;
 import com.sirn.commands.RequestCommand;
 import com.sirn.controller_connection.HeadController;
-import com.sirn.packets.AuthenticationPacket;
-import com.sirn.packets.AuthenticationPayload;
-import com.sirn.packets.AuthenticationKind;
+import com.sirn.transport.packets.AuthenticationKind;
+import com.sirn.transport.packets.AuthenticationPacket;
+import com.sirn.transport.packets.AuthenticationPayload;
 
 import org.bukkit.plugin.java.JavaPlugin;
 

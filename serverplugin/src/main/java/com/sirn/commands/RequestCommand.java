@@ -1,7 +1,8 @@
 package com.sirn.commands;
 
 import com.sirn.controller_connection.HeadController;
-import com.sirn.packets.Packet;
+import com.sirn.transport.packets.Packet;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
