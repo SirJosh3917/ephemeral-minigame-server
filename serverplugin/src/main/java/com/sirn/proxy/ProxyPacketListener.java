@@ -17,6 +17,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class ProxyPacketListener extends ControllerEventListener {
 	private final Logger logger;
 	private final ProxyServer proxyServer;
+	// For some reason, I employed levels of priority for servers.
+	// No idea why I did that in retrospect, but too lazy to change atm.
 	private final TreeMap<Integer, List<String>> serverPriorities;
 	public final RejoinReconnectHandler rejoinReconnectHandler;
 
@@ -50,7 +52,7 @@ public class ProxyPacketListener extends ControllerEventListener {
 
 	@Override
 	public void onDisconnect() {
-		this.logger.info("Proxy disconnected!");
+		this.logger.info("Proxy disconnected from controller!");
 		this.logger.info("TODO: Implement more robust logic to repair things upon disconnecting");
 	}
 
@@ -58,7 +60,7 @@ public class ProxyPacketListener extends ControllerEventListener {
 	public void onLinkServerPacket(LinkServerPacket packet) {
 		this.logger.info("Linking connected server " + packet);
 
-		// create server and link it
+		// Add server to the proxy
 		ServerInfo linkedServerInfo = this.proxyServer.constructServerInfo(
 				packet.name,
 				new InetSocketAddress(
@@ -67,33 +69,26 @@ public class ProxyPacketListener extends ControllerEventListener {
 				"some motd",
 				false
 		);
-
 		proxyServer.getConfig().addServer(linkedServerInfo);
 
-		// update priority buckets
+		// Add the newly linked server to the list of servers that take priority in that bucket.
 		List<String> serversInPriorityBucket = this.serverPriorities.get(packet.priority);
-
 		if (serversInPriorityBucket == null) {
-			serversInPriorityBucket = new ArrayList<>();
+			serversInPriorityBucket = new ArrayList<>(1);
 		}
-
 		serversInPriorityBucket.add(packet.name);
 		this.serverPriorities.put(packet.priority, serversInPriorityBucket);
+		this.recomputeServerJoinOrder();
 
 		this.logger.info("Current priority bucket " + packet.priority + ": "
 				+ Arrays.toString(serversInPriorityBucket.toArray()));
-
-		// update priority list
-		updatePriorityList();
 	}
 
 	@Override
 	public void onUnlinkServerPacket(UnlinkServerPacket packet) {
 		this.logger.info("Unlinking server " + packet);
 
-		// delete server from waterfall
 		ServerInfo serverInfo = this.proxyServer.getServerInfo(packet.name);
-
 		if (serverInfo == null) {
 			this.logger.warning("Error: server " + packet.name + " is not registered.");
 			return;
@@ -101,12 +96,13 @@ public class ProxyPacketListener extends ControllerEventListener {
 
 		this.proxyServer.getConfig().removeServer(serverInfo);
 
-		// update priority list
-		this.updatePriorityList();
+		this.recomputeServerJoinOrder();
 	}
 
 	@Override
 	public void onTransportPlayerPacket(TransportPlayerPacket packet) {
+		// The logging is ugly but after picking back up this project it helped me out, /shrug
+
 		this.logger.info("Transporting player " + packet);
 
 		UUID uuid = UUID.fromString(packet.player);
@@ -133,7 +129,16 @@ public class ProxyPacketListener extends ControllerEventListener {
 		this.logger.info("Transported player " + packet);
 	}
 
-	private void updatePriorityList() {
+	/**
+	 * In a more sophisticated setup, we may employ some fancy logic to
+	 * better distribute players to lobby servers.
+	 *
+	 * In this simple setup, we simply distribute them to the highest
+	 * priority server.
+	 *
+	 * Why levels of priority? I dunno, but too lazy to change it rn >.>
+	 */
+	private void recomputeServerJoinOrder() {
 		for (List<String> priorities : this.serverPriorities.descendingMap().values()) {
 			for (String name : priorities) {
 				if (name == null) continue;
@@ -147,14 +152,13 @@ public class ProxyPacketListener extends ControllerEventListener {
 			}
 		}
 
-		// failure case: we should've returned early
-		String name = "null";
+		// We should always have a server to forward players to, but we don't have any...
 
 		if (this.rejoinReconnectHandler.server != null) {
-			name = this.rejoinReconnectHandler.server.getName();
+			String name = this.rejoinReconnectHandler.server.getName();
+			this.logger.warning("Couldn't assign a server to `rejoinReconnectHandler` - current server is" + name);
+		} else {
+			this.logger.warning("Couldn't assign a server to `rejoinReconnectHandler` - no idea how players are gonna be routed lol");
 		}
-
-		this.logger.warning("Couldn't assign a server to `rejoinReconnectHandler` - current server is"
-				+ name);
 	}
 }

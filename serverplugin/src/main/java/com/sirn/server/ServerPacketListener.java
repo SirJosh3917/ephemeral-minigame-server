@@ -28,7 +28,7 @@ public class ServerPacketListener extends ControllerEventListener {
 
 	@Override
 	public void onDisconnect() {
-		this.logger.info("Proxy disconnected!");
+		this.logger.info("Server disconnected from controller!");
 		this.logger.info("TODO: Implement more robust logic to repair things upon disconnecting");
 	}
 

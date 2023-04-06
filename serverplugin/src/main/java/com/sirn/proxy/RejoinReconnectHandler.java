@@ -17,13 +17,12 @@ public class RejoinReconnectHandler implements ReconnectHandler {
     @Override
     public ServerInfo getServer(ProxiedPlayer player) {
         String name = "null";
-
         if (this.server != null) {
             name = this.server.getName();
         }
-
         this.logger.info("ReconnectHandler: sending player " + player.getName() + " to server " + name);
-        return server;
+
+        return this.server;
     }
 
     // do nothing - we do not do any stateful manipulation
