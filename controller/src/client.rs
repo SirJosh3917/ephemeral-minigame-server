@@ -58,65 +58,72 @@ pub async fn handle_client(
     let packet = reader.read_next().await?;
     trace!("{address}: initial packet received: {packet:?}");
 
-    let conn = match packet {
-        Packet::Authentication { name, kind, ip } => {
-            let stated_address: SocketAddr = ip
-                .trim_matches('/')
-                .parse()
-                .expect("expected valid IP address");
-
-            let mut conn_address = address;
-            conn_address.set_port(stated_address.port());
-
-            let conn = ConnectionInfo {
-                name,
-                kind,
-                address: conn_address,
-            };
-
-            trace!("{address}: registering connection as {conn:?}");
-            to_brain.send(BrainMsg::NewConn {
-                writer,
-                conn: conn.clone(),
-            })?;
-
-            conn
-        }
-        other => return Err(HandleClientError::InitialAuthPacket(other)),
+    let Packet::Authentication { name, kind, ip } = packet else {
+        return Err(HandleClientError::InitialAuthPacket(packet))
     };
+
+    let stated_address: SocketAddr = ip
+        .trim_matches('/')
+        .parse()
+        .expect("expected valid IP address");
+
+    let mut conn_address = address;
+    conn_address.set_port(stated_address.port());
+
+    let conn = ConnectionInfo {
+        name,
+        kind,
+        address: conn_address,
+    };
+
+    trace!("{address}: registering connection as {conn:?}");
+    to_brain.send(BrainMsg::NewConn {
+        writer,
+        conn: conn.clone(),
+    })?;
 
     info!("{address}: ready, listening for messages");
 
-    // read packets
-    let result = try {
-        loop {
-            let packet = reader.read_next().await?;
-            trace!("{address}: sent packet {packet:?}");
-
-            match packet {
-                Packet::Request { kind, player } => {
-                    to_brain.send(BrainMsg::Dispatch { kind, player })?;
-                }
-                Packet::UpdateActive { active } if let Kind::Minigame { kind } = &conn.kind => {
-                    to_brain.send(BrainMsg::ClusterForward {
-                        minigame_kind: kind.clone(),
-                        msg: ClusterMsg::UpdateActive { name: ServerName(conn.name.clone()), active }
-                    })?;
-                }
-                Packet::Pong { timer } if let Kind::Minigame { kind } = &conn.kind => {
-                    to_brain.send(BrainMsg::ClusterForward {
-                        minigame_kind: kind.clone(),
-                        msg: ClusterMsg::ServerPong(timer, ServerName(conn.name.clone()))
-                    })?;
-                }
-                p => return Err(HandleClientError::SpuriousPacket(p)),
-            };
-        }
-    };
+    let result = read_packets(address, reader, &to_brain, &conn).await;
 
     warn!("{address}: connection loop failed, {result:?}");
 
     to_brain.send(BrainMsg::Unlink { conn })?;
 
     result
+}
+
+async fn read_packets(
+    address: SocketAddr,
+    mut reader: ReadChannel,
+    to_brain: &UnboundedSender<BrainMsg>,
+    conn: &ConnectionInfo,
+) -> Result<!, HandleClientError> {
+    loop {
+        let packet = reader.read_next().await?;
+        trace!("{address}: sent packet {packet:?}");
+
+        match packet {
+            Packet::Request { kind, player } => {
+                to_brain.send(BrainMsg::Dispatch { kind, player })?;
+            }
+            Packet::UpdateActive { active } if let Kind::Minigame { kind } = &conn.kind => {
+                let name = ServerName(conn.name.clone());
+                let msg = ClusterMsg::UpdateActive { name, active };
+                to_brain.send(BrainMsg::ClusterForward {
+                    minigame_kind: kind.clone(),
+                    msg,
+                })?;
+            }
+            Packet::Pong { timer } if let Kind::Minigame { kind } = &conn.kind => {
+                let name = ServerName(conn.name.clone());
+                let msg = ClusterMsg::ServerPong(timer, name);
+                to_brain.send(BrainMsg::ClusterForward {
+                    minigame_kind: kind.clone(),
+                    msg,
+                })?;
+            }
+            p => return Err(HandleClientError::SpuriousPacket(p)),
+        };
+    }
 }

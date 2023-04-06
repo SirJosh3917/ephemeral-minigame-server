@@ -208,9 +208,9 @@ async fn run_minigame_cluster(
 
                 // we only want to handle server pongs when we are receiving pongs
                 let ClusterQueueState::RecvPong(server) = state else {
-					trace!("cluster {kind}: late ServerPong detected");
-					continue;
-				};
+                    trace!("cluster {kind}: late ServerPong detected");
+                    continue;
+                };
 
                 // send the player to the server
                 server.send(name).expect("expected to respond to query");
@@ -238,9 +238,9 @@ async fn run_minigame_cluster(
                 // if we know the timer message isn't late, let's check that we're
                 // in the correct state
                 let ClusterQueueState::RecvPong(server) = state else {
-					warn!("cluster {kind}: got TimerCompleted message, but in state {state}");
-					continue;
-				};
+                    warn!("cluster {kind}: got TimerCompleted message, but in state {state}");
+                    continue;
+                };
 
                 // if we get a `ServerPong` after this TimerCompleted, we want to
                 // ignore the pong.

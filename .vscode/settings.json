@@ -6,7 +6,8 @@
     "Proxied",
     "rouille",
     "sirn",
-    "thiserror"
+    "thiserror",
+    "unrecord"
   ],
   "rust-analyzer.linkedProjects": [
     "./controller/Cargo.toml",
