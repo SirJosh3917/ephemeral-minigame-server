@@ -35,7 +35,7 @@ out!
 
 1. Download some plugins
 
-   Put these jar files into `./constructor/assets/waterfall/`. Pretty sure I
+   Put these jar files into `./servers/assets/waterfall/`. Pretty sure I
    can't automate this for ToS reasons.
 
    - [ViaBackwards](https://www.spigotmc.org/resources/viabackwards.27448/)
@@ -44,12 +44,12 @@ out!
 
 2. Agree to the EULA
 
-   Agree to the EULA in `./constructor/eula.txt`. Also pretty sure I can't
+   Agree to the EULA in `./servers/eula.txt`. Also pretty sure I can't
    automate this.
 
    ```sh
    # Agree to Mojang's EULA.
-   echo "eula=true" >> constructor/eula.txt
+   echo "eula=true" >> servers/eula.txt
    ```
 
 3. Start the project!
